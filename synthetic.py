@@ -32,7 +32,8 @@ def remove_homo_edges(data, remove_homo_ratio):
     homo_edge = np.array(homo_edge)
     np.random.shuffle(homo_edge)
 
-    new_edge_index = np.concatenate((hetero_edge, homo_edge[:int(len(homo_edge) * (1 - remove_homo_ratio))]), 0)
+    new_edge_index = np.concatenate(
+        (hetero_edge, homo_edge[:int(len(homo_edge) * (1 - remove_homo_ratio))]), 0)
     data.edge_index = torch.from_numpy(new_edge_index).T
     return data
 
@@ -51,7 +52,8 @@ def remove_hetero_edges(data, remove_hetero_ratio):
     homo_edge = np.array(homo_edge)
     np.random.shuffle(hetero_edge)
 
-    new_edge_index = np.concatenate((homo_edge, hetero_edge[:int(len(hetero_edge) * (1 - remove_hetero_ratio))]), 0)
+    new_edge_index = np.concatenate(
+        (homo_edge, hetero_edge[:int(len(hetero_edge) * (1 - remove_hetero_ratio))]), 0)
     data.edge_index = torch.from_numpy(new_edge_index).T
     return data
 
@@ -68,7 +70,8 @@ def synthetic_dataset(data, target_ratio):
             hetero_edges.append(i)
 
     homo_edges, hetero_edges = np.array(homo_edges), np.array(hetero_edges)
-    num_edges, num_homo_edges, num_hetero_edges = edge_index_T.shape[0], homo_edges.shape[0], hetero_edges.shape[0]
+    num_edges, num_homo_edges, num_hetero_edges = edge_index_T.shape[
+        0], homo_edges.shape[0], hetero_edges.shape[0]
     ratio = num_homo_edges / num_edges
 
     if target_ratio > ratio:
@@ -91,7 +94,8 @@ def synthetic_dataset(data, target_ratio):
         new_edge_index = np.concatenate((new_homo_edges, new_hetero_edges), 0)
 
     else:
-        change = int((num_homo_edges - target_ratio * num_edges) / (1 - target_ratio))
+        change = int((num_homo_edges - target_ratio *
+                     num_edges) / (1 - target_ratio))
         new_homo_edges = homo_edges[:num_homo_edges - change]
         new_edge_index = np.concatenate((new_homo_edges, hetero_edges), 0)
 
@@ -138,8 +142,10 @@ def CSBM(n, d, ratio, p, mu, train_prop=.6, valid_prop=.2, num_masks=5):
 
     splits_lst = [rand_train_test_idx(data.y, train_prop=0.6, valid_prop=0.2, test_prop=0.2)
                   for _ in range(num_masks)]
-    data.train_mask, data.val_mask, data.test_mask = index_to_mask(splits_lst, data.num_nodes)
+    data.train_mask, data.val_mask, data.test_mask = index_to_mask(
+        splits_lst, data.num_nodes)
 
     return data
 
 
+# hello
