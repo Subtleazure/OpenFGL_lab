@@ -28,7 +28,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--task", type=str, default="node_cls")
 parser.add_argument("--processing", type=str, default="random_topology_noise")
 parser.add_argument("--processing_percentage", type=float, default=0.2)  # 噪声强度
-args = parser.parse_args()
+
+# args = parser.parse_args()
 
 # 定义处理目录
 processed_dir = "processed_data"

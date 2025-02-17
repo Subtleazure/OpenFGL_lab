@@ -350,7 +350,7 @@ def random_topology_noise(args, splitted_data: dict, processed_dir: str, client_
         else:
             os.makedirs(os.path.dirname(
                 noised_edge_index_filename), exist_ok=True)
-            edge_index = splitted_data["data"].edge_index
+            edge_index = splitted_data.edge_index
 
             # add negative edges
             retained_edge_index, added_edge_index = add_random_edge(
@@ -375,7 +375,7 @@ def random_topology_noise(args, splitted_data: dict, processed_dir: str, client_
             torch.save(noised_edge_index, noised_edge_index_filename)
 
         noised_splitted_data = copy.deepcopy(splitted_data)
-        noised_splitted_data["data"].edge_index = noised_edge_index
+        noised_splitted_data.edge_index = noised_edge_index
     elif args.task == "graph_cls":
         if osp.exists(noised_edge_index_filename):
             noised_edge_index = torch.load(noised_edge_index_filename)
