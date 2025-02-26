@@ -144,4 +144,21 @@ def federated_anomaly_detection(num_clients=10, num_nodes=500, feature_dim=128, 
     virtual_graph = generate_virtual_graph(
         num_nodes=num_nodes, feature_dim=feature_dim, num_classes=num_classes)
 
-    return weights, remaining_clients, removed_clients
+    # 2. 模拟客户端模型上传到服务器
+    # 这里后期要更改模型！！！
+    client_models = [torch.nn.Linear(feature_dim, feature_dim)
+                     for _ in range(num_clients)]  # 假设客户端模型是简单的线性层
+
+    client_similarities = [compute_client_similarity_matrix(
+        model, virtual_data) for model in client_models]
+
+    mainstream_similarity = compute_mainstream_similarity(client_similarities)
+
+    corrupted_clients = detect_corrupted_clients(
+        client_similarities, mainstream_similarity, threshold)
+    print("Detected corrupted clients:", corrupted_clients)
+
+    weights = adjust_client_weights(client_similarities, mainstream_similarity)
+    print("Adjusted client weights:", weights)
+
+    return weights
