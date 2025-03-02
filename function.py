@@ -65,9 +65,11 @@ def create_contaminated_client(contamination_ratio, args, processed_dir, client_
         client_data_list[client_id] = processed_data
 
     # 保存污染后的客户端数据
+    target_dir = os.path.join(args.root, 'distrib',
+                              'subgraph_fl_louvain_1_Cora_client_10')
     for client_id, client_data in enumerate(client_data_list):
         torch.save(client_data, os.path.join(
-            contaminated_client_dir, f"data_{client_id}.pt"))
+            target_dir, f"data_{client_id}.pt"))
 
     return client_data_list
 

@@ -96,8 +96,7 @@ class FedAvgServer(BaseServer):
         # 遍历所有被选中的客户端，更新全局模型参数(先不做聚合)
         # for it, client_id in enumerate(self.message_pool["sampled_clients"]):
         #     # 计算当前客户端的权重，权重为该客户端的样本数占总样本数的比例(需要修改weight列表)
-        #     # weight = self.message_pool[f"client_{client_id}"]["num_samples"] / \
-        #     # num_tot_samples
+        #     weight = weights[it]
         #     # 遍历当前客户端的模型参数和全局模型的参数
         #     for (local_param, global_param) in zip(self.message_pool[f"client_{client_id}"]["weight"],
         #                                            self.task.model.parameters()):
