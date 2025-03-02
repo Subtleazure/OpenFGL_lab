@@ -6,7 +6,6 @@ from openfgl.data.processing import random_topology_noise
 import argparse
 import random
 from function import *
-from task import *
 
 args = config.args
 
