@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from openfgl.flcore.base import BaseClient
 
+
 class FedAvgClient(BaseClient):
     """
     FedAvgClient implements the client-side logic for the Federated Averaging (FedAvg) algorithm,
@@ -16,7 +17,7 @@ class FedAvgClient(BaseClient):
     Attributes:
         None (inherits attributes from BaseClient)
     """
-    
+
     def __init__(self, args, client_id, data, data_dir, message_pool, device):
         """
         Initializes the FedAvgClient.
@@ -29,9 +30,9 @@ class FedAvgClient(BaseClient):
             message_pool (object): Pool for managing messages between client and server.
             device (torch.device): Device to run the computations on.
         """
-        super(FedAvgClient, self).__init__(args, client_id, data, data_dir, message_pool, device)
-            
-        
+        super(FedAvgClient, self).__init__(
+            args, client_id, data, data_dir, message_pool, device)
+
     def execute(self):
         """
         Executes the local training process. This method first synchronizes the local model
@@ -50,9 +51,6 @@ class FedAvgClient(BaseClient):
         and the number of samples in the client's dataset.
         """
         self.message_pool[f"client_{self.client_id}"] = {
-                "num_samples": self.task.num_samples,
-                "weight": list(self.task.model.parameters())
-            }
-        
-        
-        
+            "num_samples": self.task.num_samples,
+            "weight": list(self.task.model.parameters())
+        }

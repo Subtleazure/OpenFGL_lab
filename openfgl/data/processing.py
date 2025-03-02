@@ -8,6 +8,7 @@ import random
 import argparse
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils import add_random_edge
+import pprint
 
 
 def processing(args: argparse.ArgumentParser, splitted_data, processed_dir, client_id):
@@ -372,6 +373,7 @@ def random_topology_noise(args, splitted_data: dict, processed_dir: str, client_
             # noised
             noised_edge_index = torch.hstack(
                 (remained_edge_index, added_edge_index))
+            # only save the edge_index!
             torch.save(noised_edge_index, noised_edge_index_filename)
 
         noised_splitted_data = copy.deepcopy(splitted_data)
