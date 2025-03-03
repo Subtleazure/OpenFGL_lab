@@ -45,11 +45,8 @@ class FedAvgServer(BaseServer):
 
         # 获取各个客户端的模型参数，所有客户端模型在虚拟图数据上推理得到节点特征列表
 
-        client_file = torch.load('contaminated_data/data_0.pt')
-
         # 生成虚拟图数据
-        virtual_graph = generate_virtual_graph(
-            feature_dim=client_file.x.size(1))
+        virtual_graph = generate_virtual_graph()
 
         # 初始化 GCN 模型
         input_dim = virtual_graph.x.size(1)  # 节点特征维度

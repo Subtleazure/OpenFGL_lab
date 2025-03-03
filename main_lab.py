@@ -9,7 +9,8 @@ from function import *
 
 args = config.args
 
-args.root = "your_data_root"
+# modify the root path
+args.root = "contaminated_data"
 args.dataset = ["Cora"]
 args.simulation_mode = "subgraph_fl_louvain"
 args.num_clients = 10
