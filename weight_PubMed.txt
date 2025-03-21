@@ -1,0 +1,14 @@
+v1
+contaminated_client_indices: [6, 4, 5]
+Index 6: 3.93
+Index 4: 2.89
+Index 5: 6.48
+Average of average positions: 4.43
+
+benchmark
+contaminated_client_indices: [8, 2, 9]
+Index 8: 7.00
+Index 2: 6.00
+Index 9: 8.00
+Average of average positions: 7.00
+

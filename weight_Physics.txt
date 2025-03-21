@@ -1,0 +1,103 @@
+v1
+contaminated_client_indices: [94, 53, 44, 32, 79, 7, 66, 99, 86, 47, 70, 84, 72, 9, 87, 51, 68, 1, 21, 83, 92, 49, 98, 35, 23, 95, 57, 16, 97, 13]
+Index 94: 43.09
+Index 53: 16.64
+Index 44: 33.11
+Index 32: 13.85
+Index 79: 68.67
+Index 7: 32.69
+Index 66: 76.55
+Index 99: 49.30
+Index 86: 14.31
+Index 47: 74.22
+Index 70: 62.29
+Index 84: 22.28
+Index 72: 71.78
+Index 9: 90.63
+Index 87: 77.06
+Index 51: 44.37
+Index 68: 20.90
+Index 1: 90.11
+Index 21: 62.93
+Index 83: 45.34
+Index 92: 44.11
+Index 49: 74.03
+Index 98: 48.17
+Index 35: 77.17
+Index 23: 38.96
+Index 95: 45.97
+Index 57: 13.88
+Index 16: 55.02
+Index 97: 39.16
+Index 13: 87.46
+Average of average positions: 51.13
+
+v2
+contaminated_client_indices: [25, 41, 23, 4, 36, 72, 43, 0, 2, 37, 91, 60, 10, 7, 49, 24, 17, 26, 55, 98, 45, 50, 39, 48, 12, 74, 28, 27, 20, 76]
+Index 25: 25.50
+Index 41: 90.62
+Index 23: 70.53
+Index 4: 14.69
+Index 36: 24.99
+Index 72: 30.68
+Index 43: 10.78
+Index 0: 28.02
+Index 2: 4.28
+Index 37: 38.06
+Index 91: 18.98
+Index 60: 49.81
+Index 10: 11.08
+Index 7: 54.02
+Index 49: 18.25
+Index 24: 91.66
+Index 17: 81.48
+Index 26: 17.79
+Index 55: 17.29
+Index 98: 22.38
+Index 45: 91.86
+Index 50: 33.45
+Index 39: 55.86
+Index 48: 39.01
+Index 12: 72.23
+Index 74: 43.47
+Index 28: 60.02
+Index 27: 27.02
+Index 20: 46.13
+Index 76: 65.33
+Average of average positions: 41.84
+
+
+benchmark
+contaminated_client_indices: [59, 25, 2, 0, 92, 63, 52, 67, 28, 11, 20, 15, 85, 49, 88, 83, 51, 69, 50, 95, 62, 14, 64, 16, 70, 57, 47, 26, 5, 60]
+Index 59: 41.00
+Index 25: 7.00
+Index 2: 97.00
+Index 0: 99.00
+Index 92: 74.00
+Index 63: 45.00
+Index 52: 34.00
+Index 67: 49.00
+Index 28: 10.00
+Index 11: 88.00
+Index 20: 2.00
+Index 15: 83.00
+Index 85: 67.00
+Index 49: 31.00
+Index 88: 70.00
+Index 83: 65.00
+Index 51: 33.00
+Index 69: 51.00
+Index 50: 32.00
+Index 95: 77.00
+Index 62: 44.00
+Index 14: 84.00
+Index 64: 46.00
+Index 16: 81.00
+Index 70: 52.00
+Index 57: 39.00
+Index 47: 29.00
+Index 26: 8.00
+Index 5: 94.00
+Index 60: 42.00
+Average of average positions: 52.47
+

@@ -1,0 +1,39 @@
+v1
+contaminated_client_indices: [39, 3, 2, 21, 5, 33, 20, 23, 15, 14, 0, 44, 6, 12, 40]
+Index 39: 46.04
+Index 3: 31.29
+Index 2: 10.50
+Index 21: 28.11
+Index 5: 27.51
+Index 33: 16.23
+Index 20: 26.81
+Index 23: 10.07
+Index 15: 27.82
+Index 14: 11.48
+Index 0: 22.54
+Index 44: 32.51
+Index 6: 33.68
+Index 12: 30.72
+Index 40: 25.94
+Average of average positions: 25.42
+
+
+benchmark
+contaminated_client_indices: [23, 46, 22, 14, 41, 4, 34, 28, 15, 32, 26, 6, 11, 2, 29]
+Index 23: 2.00
+Index 46: 25.00
+Index 22: 1.00
+Index 14: 30.00
+Index 41: 20.00
+Index 4: 45.00
+Index 34: 13.00
+Index 28: 7.00
+Index 15: 31.00
+Index 32: 11.00
+Index 26: 5.00
+Index 6: 43.00
+Index 11: 36.00
+Index 2: 47.00
+Index 29: 8.00
+Average of average positions: 21.60
+

@@ -1,0 +1,103 @@
+v1
+contaminated_client_indices: [7, 96, 44, 89, 39, 34, 74, 66, 31, 19, 65, 2, 90, 88, 14, 54, 38, 52, 56, 70, 86, 69, 5, 72, 57, 92, 93, 78, 3, 53]
+Index 7: 21.68
+Index 96: 61.67
+Index 44: 31.27
+Index 89: 10.31
+Index 39: 60.15
+Index 34: 18.63
+Index 74: 14.14
+Index 66: 63.42
+Index 31: 57.08
+Index 19: 3.10
+Index 65: 50.37
+Index 2: 15.70
+Index 90: 63.98
+Index 88: 45.19
+Index 14: 49.22
+Index 54: 14.38
+Index 38: 92.22
+Index 52: 78.50
+Index 56: 48.73
+Index 70: 56.96
+Index 86: 15.51
+Index 69: 33.03
+Index 5: 74.81
+Index 72: 68.80
+Index 57: 78.60
+Index 92: 29.80
+Index 93: 60.27
+Index 78: 55.88
+Index 3: 33.81
+Index 53: 23.82
+Average of average positions: 44.37
+
+v2
+contaminated_client_indices: [39, 81, 76, 42, 43, 83, 79, 21, 49, 23, 11, 50, 6, 99, 97, 48, 58, 64, 68, 27, 60, 80, 88, 94, 15, 61, 55, 52, 20, 35]
+Index 39: 64.76
+Index 81: 63.89
+Index 76: 75.91
+Index 42: 51.68
+Index 43: 56.84
+Index 83: 68.25
+Index 79: 34.60
+Index 21: 32.35
+Index 49: 69.42
+Index 23: 61.60
+Index 11: 92.00
+Index 50: 43.16
+Index 6: 96.33
+Index 99: 50.48
+Index 97: 54.67
+Index 48: 34.92
+Index 58: 52.65
+Index 64: 67.92
+Index 68: 55.77
+Index 27: 54.51
+Index 60: 67.40
+Index 80: 93.06
+Index 88: 63.40
+Index 94: 60.91
+Index 15: 63.55
+Index 61: 91.31
+Index 55: 67.31
+Index 52: 25.40
+Index 20: 52.99
+Index 35: 77.33
+Average of average positions: 61.48
+
+
+benchmark
+contaminated_client_indices: [95, 52, 45, 92, 93, 75, 30, 94, 13, 65, 43, 70, 41, 11, 66, 71, 97, 31, 77, 68, 7, 3, 82, 4, 55, 87, 46, 10, 19, 51]
+Index 95: 65.00
+Index 52: 22.00
+Index 45: 15.00
+Index 92: 62.00
+Index 93: 63.00
+Index 75: 45.00
+Index 30: 0.00
+Index 94: 64.00
+Index 13: 98.00
+Index 65: 35.00
+Index 43: 13.00
+Index 70: 40.00
+Index 41: 11.00
+Index 11: 96.00
+Index 66: 36.00
+Index 71: 41.00
+Index 97: 67.00
+Index 31: 1.00
+Index 77: 47.00
+Index 68: 38.00
+Index 7: 92.00
+Index 3: 88.00
+Index 82: 52.00
+Index 4: 89.00
+Index 55: 25.00
+Index 87: 57.00
+Index 46: 16.00
+Index 10: 95.00
+Index 19: 80.00
+Index 51: 21.00
+Average of average positions: 49.13
+
