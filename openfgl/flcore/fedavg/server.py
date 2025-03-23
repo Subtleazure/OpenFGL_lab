@@ -52,7 +52,7 @@ class FedAvgServer(BaseServer):
         print("weights:", weights)
         sorted_indices1 = sort_indices(weights)
         if self.args.graph_repair:
-            contam_num = self.args.num_clients * self.args.contamination_ratio
+            contam_num = int(self.args.num_clients * self.args.contamination_ratio)
             self.args.repair_clients = sorted_indices1[:contam_num]
         print("weights list(greater):", sorted_indices1)
         with open(self.args.log_dir, 'a', encoding='utf-8') as file:
@@ -123,7 +123,7 @@ class FedAvgServer(BaseServer):
         print("weights:", weights)
         sorted_indices1 = sort_indices(weights)
         if self.args.graph_repair:
-            contam_num = self.args.num_clients * self.args.contamination_ratio
+            contam_num = int(self.args.num_clients * self.args.contamination_ratio)
             self.args.repair_clients = sorted_indices1[:contam_num]
         print("weights list(greater):", sorted_indices1)
         with open(self.args.log_dir, 'a', encoding='utf-8') as file:
@@ -215,7 +215,7 @@ class FedAvgServer(BaseServer):
         print("weights:", weights)
         sorted_indices1 = sort_indices(weights)
         if self.args.graph_repair:
-            contam_num = self.args.num_clients * self.args.contamination_ratio
+            contam_num = int(self.args.num_clients * self.args.contamination_ratio)
             self.args.repair_clients = sorted_indices1[:contam_num]
         print("weights list(greater):", sorted_indices1)
         with open(self.args.log_dir, 'a', encoding='utf-8') as file:
@@ -254,7 +254,7 @@ class FedAvgServer(BaseServer):
         print("weights:", weights)
         sorted_indices1 = sort_indices(weights)
         if self.args.graph_repair:
-            contam_num = self.args.num_clients * self.args.contamination_ratio
+            contam_num = int(self.args.num_clients * self.args.contamination_ratio)
             self.args.repair_clients = sorted_indices1[:contam_num]
         print("weights list(greater):", sorted_indices1)
         with open(self.args.log_dir, 'a', encoding='utf-8') as file:

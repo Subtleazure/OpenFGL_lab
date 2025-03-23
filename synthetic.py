@@ -6,7 +6,7 @@ import numpy as np
 import torch.nn.functional as F
 import torch.nn as nn
 from load_data import *
-from .load_data import rand_train_test_idx, index_to_mask
+# from .load_data import rand_train_test_idx, index_to_mask
 from torch_geometric.utils import get_laplacian, to_dense_adj
 
 
