@@ -404,15 +404,15 @@ def A_D(data, device):
     edge_index, _, mask = remove_isolated_nodes(data.edge_index, num_nodes=data.num_nodes)
     
     # 更新数据
-    data.edge_index = edge_index
-    data.x = data.x[mask]  # 更新节点特征
-    data.y = data.y[mask]  # 更新节点标签（如果有）
+    # data.edge_index = edge_index
+    # data.x = data.x[mask]  # 更新节点特征
+    # data.y = data.y[mask]  # 更新节点标签（如果有）
     
     # 将数据移动到GPU
     data = data.to(device)
     
     # 获取图的边索引
-    edge_index = data.edge_index
+    # edge_index = data.edge_index
     
     # 计算度矩阵 D
     deg = degree(edge_index[0], dtype=torch.float)
@@ -479,119 +479,49 @@ def S_client_weights_data_list(data_list, device):
 
 
 def modify_edges(similarity_matrix, edge_index, num_nodes, device=None):
-    # Set device
     if device is None:
-        device = similarity_matrix.device  # Use the same device as similarity_matrix
+        device = similarity_matrix.device
 
-    # Move tensors to the specified device
     similarity_matrix = similarity_matrix.to(device)
     edge_index = edge_index.to(device)
 
-    # Step 1: Extract similarity values for connected edges
-    connected_edges = edge_index.t()  # Convert to shape [n, 2]
+    # Step 1: Extract edge similarities
+    connected_edges = edge_index.t()  # Shape: [num_edges, 2]
     edge_similarities = similarity_matrix[connected_edges[:, 0], connected_edges[:, 1]]
 
-    # Step 2: Calculate the threshold (70th percentile)
-    threshold = torch.quantile(edge_similarities, 0.7)
-
-    # Step 3: Remove edges with similarity below the threshold
+    # Step 2: Remove lowest 30% edges (keep top 70%)
+    threshold = torch.quantile(edge_similarities, 0.3)  # 30th percentile (keep 70%)
     mask = edge_similarities >= threshold  # Keep edges with similarity >= threshold
-    edge_index = edge_index[:, mask]  # Update edge_index
+    edge_index_kept = edge_index[:, mask]
+    num_edges_removed = edge_index.size(1) - edge_index_kept.size(1)  # Should be ~30%
 
-    # Step 4: Precompute all possible node pairs (excluding self-loops and existing edges)
-    # Create a set of existing edges for fast lookup
+    # Step 3: Prepare existing edges (from ORIGINAL edge_index to avoid duplicates)
     existing_edges = set(zip(edge_index[0].cpu().numpy(), edge_index[1].cpu().numpy()))
 
-    # Generate all possible node pairs
+    # Step 4: Generate all possible candidate edges (no self-loops, no existing edges)
+    # 只生成 (i,j) 且 i < j，避免重复计算 (j,i)
     all_pairs = torch.combinations(torch.arange(num_nodes, device=device), 2)  # Shape: [num_pairs, 2]
-    all_pairs = torch.cat([all_pairs, all_pairs.flip(1)], dim=0)  # Include both (i,j) and (j,i)
+    
+    # Filter out existing edges (both (i,j) and (j,i))
+    mask = torch.tensor(
+        [(pair[0].item(), pair[1].item()) not in existing_edges and 
+         (pair[1].item(), pair[0].item()) not in existing_edges 
+         for pair in all_pairs],
+        device=device
+    )
+    candidate_pairs = all_pairs[mask]
 
-    # Filter out existing edges
-    mask = torch.tensor([(pair[0].item(), pair[1].item()) not in existing_edges for pair in all_pairs], device=device)
-    candidate_pairs = all_pairs[mask]  # Shape: [num_candidates, 2]
+    # Step 5: Add top-k highest similarity edges (k = num_edges_removed)
+    if num_edges_removed > 0 and len(candidate_pairs) > 0:
+        candidate_similarities = similarity_matrix[candidate_pairs[:, 0], candidate_pairs[:, 1]]
+        sorted_indices = torch.argsort(candidate_similarities, descending=True)
+        num_edges_to_add = min(num_edges_removed, len(candidate_pairs))  # Avoid overflow
+        selected_pairs = candidate_pairs[sorted_indices[:num_edges_to_add]]
+        
+        # 由于相似度对称，直接添加 (i,j)，不需要 (j,i)
+        edge_index = torch.cat([edge_index_kept, selected_pairs.t()], dim=1)
+    else:
+        edge_index = edge_index_kept
 
-    # Step 5: Sort candidate pairs by similarity and select top-k
-    candidate_similarities = similarity_matrix[candidate_pairs[:, 0], candidate_pairs[:, 1]]
-    sorted_indices = torch.argsort(candidate_similarities, descending=True)
-    num_edges_to_add = len(connected_edges) - mask.sum().item()  # Number of edges to add
-    selected_pairs = candidate_pairs[sorted_indices[:num_edges_to_add]]  # Select top-k pairs
-    new_edges = selected_pairs.t().cpu().numpy()  # Convert to numpy array for easier printing
-    print("Newly added edges:")
-    for i in range(new_edges.shape[1]):
-        print(f"Edge {i+1}: {new_edges[0, i]} -> {new_edges[1, i]}")
-    # Step 6: Add selected pairs to edge_index
-    edge_index = torch.cat([edge_index, selected_pairs.t()], dim=1)  # Add new edges
-
+    # print(edge_index.shape)
     return edge_index
-
-
-# def adjust_client_weights(client_similarities, mainstream_similarity) -> list:
-    """
-    根据偏差动态调整客户端权重
-    :param client_similarities: 所有客户端的相似度矩阵列表
-    :param mainstream_similarity: 主流相似度矩阵
-    :return: 客户端权重列表
-    """
-    weights = []
-    diffs = []
-    for client_sim in client_similarities:
-        # 计算均方误差
-        mse = torch.mean((client_sim - mainstream_similarity) ** 2).item()
-        # 偏差越大，权重越小
-        weight = 1.0 / (1.0 + mse)
-        weights.append(weight)
-        diffs.append(mse)
-    # 归一化权重
-    weights = torch.tensor(weights) / torch.sum(torch.tensor(weights))
-    print(diffs)
-    return weights
-
-
-# def federated_anomaly_detection(client_data_list, hid_dim=64, num_layers=2, dropout=0.5, num_clients=10, num_nodes=500, feature_dim=128, num_classes=7, threshold=0.1):
-    """
-    联邦学习中的异常客户端检测
-    :param num_clients: 客户端数量
-    :param num_nodes: 虚拟图的节点数量
-    :param feature_dim: 节点特征维度
-    :param num_classes: 类别数量
-    :param threshold: 偏差阈值
-    :return: 
-        - weights: 客户端权重列表（方案一）
-        - remaining_clients: 剩余的客户端索引列表（方案二）
-        - removed_clients: 被踢出的客户端索引列表（方案二）
-    """
-
-    # 服务器端生成虚拟图数据
-    virtual_graph = generate_virtual_graph(
-        num_nodes=num_nodes, feature_dim=feature_dim, num_classes=num_classes)
-
-    gcn_model = GCN(input_dim=feature_dim, hid_dim=hid_dim, output_dim=num_classes,
-                    num_layers=num_layers, dropout=dropout)
-
-    client_data_x = []
-    for index in range(num_clients):
-        data = Data(x=client_data_list[index]['x'],
-                    edge_index=client_data_list[index]['edge_index'], y=client_data_list[index]['y'])
-
-        # 使用GCN进行推理
-        with torch.no_grad():
-            updated_x, _ = gcn_model(data)
-
-        # 将更新后的x添加到client_data_x列表中
-        client_data_x.append(updated_x)
-
-        # 2. 模拟客户端模型上传到服务器
-    # 使用client_data_x替换client_models
-    client_similarities = [compute_client_similarity_matrix(
-        x, virtual_graph) for x in client_data_x]
-    mainstream_similarity = compute_mainstream_similarity(client_similarities)
-
-    corrupted_clients = detect_corrupted_clients(
-        client_similarities, mainstream_similarity, threshold)
-    print("Detected corrupted clients:", corrupted_clients)
-
-    # 对所有client, 都有weight
-    weights = adjust_client_weights(client_similarities, mainstream_similarity)
-    # print("Adjusted client weights:", weights)
-
-    return weights

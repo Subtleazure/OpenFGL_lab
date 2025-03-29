@@ -83,6 +83,7 @@ class FedAvgClient(BaseClient):
         # if(self.client_id==0):
         #     self.task.data.edge_index[0][0] = 249  # 修改源节点
         #     self.task.data.edge_index[1][0] = 27  # 修改目标节点
+        # print("round id:", round_id)
         self.task.train()
 
     def send_message(self):
