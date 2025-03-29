@@ -47,7 +47,14 @@ class FedAvgClient(BaseClient):
         # self.task.model.eval()
         # and self.client_id in self.args.contam_clients
         # and (round_id + 1) % 10 == 0
+        if self.args.aggregation_mode == "lap" and (round_id + 1) % 10 == 0:
+            if self.client_id == 0:
+                self.args.S_ano_list = []
+                print("computing S_ano")
+            self.args.S_ano_list.append(compute_S_ano(self.task.data, self.device))
+
         if self.args.graph_repair and self.client_id in self.args.repair_clients and (round_id + 1) % 10 == 0:
+            print(f"client {self.client_id} is repairing...")
             input_dim = self.task.data.x.size(1)
             hid_dim = 64
             output_dim = self.args.classes
@@ -65,15 +72,11 @@ class FedAvgClient(BaseClient):
                 self.task.data = self.task.data.to(self.device)
                 node_features, logits = gcn_model(self.task.data)
             
-            node_features = node_features.cpu()
+            # node_features = node_features.cpu()
             similarity_matrix = compute_client_similarity_matrix(node_features)
 
             self.task.data.edge_index = modify_edges(similarity_matrix, self.task.data.edge_index, self.task.data.num_nodes, device = self.device)
 
-        if (round_id + 1) % 10 == 0:
-            if self.client_id == 0:
-                self.args.S_ano_list = []
-            self.args.S_ano_list.append(compute_S_ano(self.task.data, self.device))
         # 全局模型在本地数据上推理，丢掉边
         # gcn_model(self.task.data) x,y,edge_index
         # 计算每条边for i in sim_matrix的特征相似度sim(node_features)，全局模型在edge相邻的两个节点推理出来的特征node_features

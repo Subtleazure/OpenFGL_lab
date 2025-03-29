@@ -400,27 +400,24 @@ def sort_indices(weights):
 
 
 def A_D(data, device):
-    # 移除孤立节点
-    edge_index, _, mask = remove_isolated_nodes(data.edge_index, num_nodes=data.num_nodes)
+    edge_index = data.edge_index
     
-    # 更新数据
-    # data.edge_index = edge_index
-    # data.x = data.x[mask]  # 更新节点特征
-    # data.y = data.y[mask]  # 更新节点标签（如果有）
+    # 确保无向图的边是双向的（添加反向边）
+    edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)  # 无向图 => 强制双向
     
-    # 将数据移动到GPU
-    data = data.to(device)
+    # 移除孤立节点（同时检查入度和出度）
+    edge_index, _, mask = remove_isolated_nodes(edge_index, num_nodes=data.num_nodes)
+    num_nodes = mask.sum().item()  # 有效节点数
     
-    # 获取图的边索引
-    # edge_index = data.edge_index
+    # 计算度矩阵 D（确保无零度节点）
+    deg = degree(edge_index[0], num_nodes=num_nodes, dtype=torch.float)
+    assert not (deg == 0).any(), "仍有孤立节点未被移除！"  # 确保无零度
     
-    # 计算度矩阵 D
-    deg = degree(edge_index[0], dtype=torch.float)
     D = torch.diag(deg).to(device)
     
-    # 计算邻接矩阵 A
-    A = to_dense_adj(edge_index)[0].to(device)
-
+    # 计算邻接矩阵 A（仅保留有效节点）
+    A = to_dense_adj(edge_index, max_num_nodes=num_nodes)[0].to(device)
+    
     return A, D
 
 

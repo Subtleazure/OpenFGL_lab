@@ -46,12 +46,12 @@ def calculate_average_positions(indices, weights_lists):
     return average_positions, avg_of_avg
 
 
-def write_output(file_path, aggregation_mode, data, average_positions, avg_of_avg):
+def write_output(file_path, aggregation_mode, data, average_positions, avg_of_avg, repair: bool):
     """
     将结果写入文件
     """
     with open(file_path, 'a') as file:
-        file.write(f"{aggregation_mode}\n")
+        file.write(f"{aggregation_mode} repair: {repair}\n")
         file.write(f"contaminated_client_indices: {data[0]}\n")
         for index, avg_pos in average_positions.items():
             file.write(f"Index {index}: {avg_pos:.2f}\n")
@@ -59,7 +59,7 @@ def write_output(file_path, aggregation_mode, data, average_positions, avg_of_av
         file.write("\n")
 
 
-def average_index_main(aggregation_mode, input_file, output_file):
+def average_index_main(aggregation_mode, input_file, output_file, repair: bool):
     """
     主函数
     """
@@ -71,7 +71,7 @@ def average_index_main(aggregation_mode, input_file, output_file):
         # 计算平均位置及其平均值
         average_positions, avg_of_avg = calculate_average_positions(indices, weights_lists)
         # 将结果写入输出文件
-        write_output(output_file, aggregation_mode, (indices, weights_lists), average_positions, avg_of_avg)
+        write_output(output_file, aggregation_mode, (indices, weights_lists), average_positions, avg_of_avg, repair)
 
 
 # if __name__ == "__main__":
