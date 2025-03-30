@@ -29,3 +29,13 @@ Index 12: 16.00
 Index 8: 1.00
 Average of average positions: 10.17
 
+v1 repair: True
+contaminated_client_indices: [7, 8, 5, 1, 4, 19]
+Index 7: 4.66
+Index 8: 8.39
+Index 5: 9.29
+Index 1: 2.93
+Index 4: 8.84
+Index 19: 13.80
+Average of average positions: 7.98
+

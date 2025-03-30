@@ -420,26 +420,16 @@ def A_D(data, device):
     
     return A, D
 
-
 def compute_S_ano(data, device):
-
     A, D = A_D(data, device)
-    # 计算拉普拉斯矩阵 L = D - A
-    L = D - A
     
-    # 计算 D^T L D
-    D_T_L_D = torch.matmul(D.T, torch.matmul(L, D))
+    # 只提取对角线元素
+    D_diag = torch.diag(D)
+    A_diag = torch.diag(A)
     
-    # 计算 D^T D
-    D_T_D = torch.matmul(D.T, D)
-    
-    # 计算 S_ano(G)
-    S_ano = D_T_L_D / D_T_D
-    
-    # 返回 S_ano 的标量值（取对角线元素的均值）
-    s = torch.diag(S_ano).mean().item()
-
-    return s
+    # 直接计算对角线差值
+    L_diag = D_diag - A_diag
+    return L_diag.mean().item()
 
 
 def S_client_weights_s(S_ano_list):
@@ -479,9 +469,6 @@ def modify_edges(similarity_matrix, edge_index, num_nodes, device=None):
     if device is None:
         device = similarity_matrix.device
 
-    similarity_matrix = similarity_matrix.to(device)
-    edge_index = edge_index.to(device)
-
     # Step 1: Extract edge similarities
     connected_edges = edge_index.t()  # Shape: [num_edges, 2]
     edge_similarities = similarity_matrix[connected_edges[:, 0], connected_edges[:, 1]]
@@ -490,35 +477,41 @@ def modify_edges(similarity_matrix, edge_index, num_nodes, device=None):
     threshold = torch.quantile(edge_similarities, 0.3)  # 30th percentile (keep 70%)
     mask = edge_similarities >= threshold  # Keep edges with similarity >= threshold
     edge_index_kept = edge_index[:, mask]
-    num_edges_removed = edge_index.size(1) - edge_index_kept.size(1)  # Should be ~30%
+    num_edges_removed = edge_index.size(1) - edge_index_kept.size(1)
 
-    # Step 3: Prepare existing edges (from ORIGINAL edge_index to avoid duplicates)
-    existing_edges = set(zip(edge_index[0].cpu().numpy(), edge_index[1].cpu().numpy()))
+    # Early return if no edges need to be added
+    if num_edges_removed == 0:
+        return edge_index_kept
+
+    # Step 3: Prepare existing edges (optimized using tensor operations)
+    # 修正这里：正确构造稀疏张量
+    existing_edges = torch.sparse_coo_tensor(
+        edge_index,
+        torch.ones(edge_index.size(1), device=device),  # 修正参数传递
+        size=(num_nodes, num_nodes),
+        device=device
+    ).to_dense().bool()
 
     # Step 4: Generate all possible candidate edges (no self-loops, no existing edges)
-    # 只生成 (i,j) 且 i < j，避免重复计算 (j,i)
-    all_pairs = torch.combinations(torch.arange(num_nodes, device=device), 2)  # Shape: [num_pairs, 2]
+    # Create upper triangular mask excluding diagonal
+    triu_mask = torch.triu(torch.ones(num_nodes, num_nodes, device=device), diagonal=1).bool()
+    # Mask out existing edges and their reverse
+    candidate_mask = triu_mask & (~existing_edges) & (~existing_edges.t())
     
-    # Filter out existing edges (both (i,j) and (j,i))
-    mask = torch.tensor(
-        [(pair[0].item(), pair[1].item()) not in existing_edges and 
-         (pair[1].item(), pair[0].item()) not in existing_edges 
-         for pair in all_pairs],
-        device=device
-    )
-    candidate_pairs = all_pairs[mask]
+    # Get indices of candidate edges
+    candidate_pairs = torch.nonzero(candidate_mask)
 
     # Step 5: Add top-k highest similarity edges (k = num_edges_removed)
     if num_edges_removed > 0 and len(candidate_pairs) > 0:
         candidate_similarities = similarity_matrix[candidate_pairs[:, 0], candidate_pairs[:, 1]]
-        sorted_indices = torch.argsort(candidate_similarities, descending=True)
-        num_edges_to_add = min(num_edges_removed, len(candidate_pairs))  # Avoid overflow
-        selected_pairs = candidate_pairs[sorted_indices[:num_edges_to_add]]
+        # Use torch.topk instead of sort for better performance
+        num_edges_to_add = min(num_edges_removed, len(candidate_pairs))
+        topk_values, topk_indices = torch.topk(candidate_similarities, k=num_edges_to_add)
+        selected_pairs = candidate_pairs[topk_indices]
         
-        # 由于相似度对称，直接添加 (i,j)，不需要 (j,i)
+        # Concatenate kept edges with new edges
         edge_index = torch.cat([edge_index_kept, selected_pairs.t()], dim=1)
     else:
         edge_index = edge_index_kept
 
-    # print(edge_index.shape)
     return edge_index

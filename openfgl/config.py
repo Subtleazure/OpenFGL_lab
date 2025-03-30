@@ -33,14 +33,14 @@ supported_evaluation_modes = ["global_model_on_local_data", "global_model_on_glo
 supported_data_processing = ["raw", "random_feature_sparsity", "random_feature_noise",
                              "random_topology_sparsity", "random_topology_noise", "random_label_sparsity", "random_label_noise"]
 
-supported_aggregation_modes = ["benchmark", "1 virtual graph", "2 virtual graphs", "lap"]
+supported_aggregation_modes = ["ben", "v1", "v2", "lap"]
 
 
 parser = argparse.ArgumentParser()
 
 # environment settings
 parser.add_argument("--use_cuda", type=bool, default=True)
-parser.add_argument("--gpuid", type=int, default=3)
+parser.add_argument("--gpuid", type=int, default=1)
 parser.add_argument("--seed", type=int, default=2024)
 
 # global dataset settings
@@ -130,7 +130,7 @@ parser.add_argument("--accuracy_curve_html_dir", type=str, default=None)
 parser.add_argument("--accuracy_fit_dir", type=str, default=None)
 parser.add_argument("--accuracy_fit_html_dir", type=str, default=None)
 parser.add_argument("--window_len", type=int, default=800)
-parser.add_argument("--aggregation_mode", type=str, default="benchmark", choices=supported_aggregation_modes)
+parser.add_argument("--aggregation_mode", type=str, default="v2", choices=supported_aggregation_modes)
 parser.add_argument("--dataset_", type=str, default=None)
 parser.add_argument("--graph_repair", type=bool, default=True)
 parser.add_argument("--S_ano_list", type=list, default=[])

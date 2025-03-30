@@ -50,4 +50,4 @@ elif isinstance(data, torch.Tensor):
 
 else:
     print("The loaded data is of another type. Here is its content:")
-    pprint.pprint(data.edge_index)
+    pprint.pprint(data)

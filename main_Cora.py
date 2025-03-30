@@ -6,8 +6,11 @@ from openfgl.data.processing import random_topology_noise
 import argparse
 import random
 from function import *
+from average_index import *
 
 args = config.args
+
+args.aggregation_mode = "v2"
 
 # modify the root path
 args.root = "/data2/liujiaqi/openfgl_dataset/contaminated/Cora"
@@ -19,8 +22,8 @@ args.classes = 7
 args.num_rounds = 1000
 args.lr = 0.01
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_Cora.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Cora/accuracy_curve_{args.num_rounds}_lr_0_01_Cora_lap.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Cora/accuracy_curve_{args.num_rounds}_lr_0_01_Cora_lap.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Cora/accuracy_curve_{args.num_rounds}_lr_0_01_Cora_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Cora/accuracy_curve_{args.num_rounds}_lr_0_01_Cora_{args.aggregation_mode}_{args.graph_repair}.html'
 
 if True:
     args.fl_algorithm = "fedavg"
@@ -57,3 +60,5 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 # 以下是原有的训练代码
 trainer = FGLTrainer(args)
 trainer.train()
+
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Cora.txt", args.graph_repair)

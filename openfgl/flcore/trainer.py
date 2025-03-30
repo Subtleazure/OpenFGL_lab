@@ -73,11 +73,11 @@ class FGLTrainer:
 
             # Perform aggregation every 10 rounds
             if (round_id + 1) % 10 == 0:
-                if self.args.aggregation_mode == "benchmark":
+                if self.args.aggregation_mode == "ben":
                     self.server.execute()  # Aggregate client updates
-                elif self.args.aggregation_mode == "1 virtual graph":
+                elif self.args.aggregation_mode == "v1":
                     self.server.execute_one_vg()
-                elif self.args.aggregation_mode == "2 virtual graphs":
+                elif self.args.aggregation_mode == "v2":
                     self.server.execute_two_vg()
                 elif self.args.aggregation_mode == "lap":
                     self.server.execute_lap()

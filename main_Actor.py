@@ -19,8 +19,8 @@ args.classes = 5
 args.num_rounds = 1000
 args.lr = 0.002
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_Actor.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Actor/accuracy_curve_{args.num_rounds}_lr_0_002_Actor_ben.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Actor/accuracy_curve_{args.num_rounds}_lr_0_002_Actor_ben.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Actor/accuracy_curve_{args.num_rounds}_lr_0_002_Actor_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Actor/accuracy_curve_{args.num_rounds}_lr_0_002_Actor_{args.aggregation_mode}_{args.graph_repair}.html'
 
 if True:
     args.fl_algorithm = "fedavg"
@@ -58,4 +58,4 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 trainer = FGLTrainer(args)
 trainer.train()
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Actor.txt")
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Actor.txt", args.graph_repair)

@@ -8,7 +8,7 @@ import random
 from function import *
 from average_index import *
 args = config.args
-
+args.aggregation_mode = "lap"
 # modify the root path
 args.root = "/data2/liujiaqi/openfgl_dataset/contaminated/Amz-Comp"
 args.dataset = ["Computers"]
@@ -19,8 +19,8 @@ args.classes = 10
 args.num_rounds = 3000
 args.lr = 0.005
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_Amz-Comp.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Amz-Comp/accuracy_curve_{args.num_rounds}_lr_0_005_Amz-Comp_ben.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Amz-Comp/accuracy_curve_{args.num_rounds}_lr_0_005_Amz-Comp_ben.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Amz-Comp/accuracy_curve_{args.num_rounds}_lr_0_005_Amz-Comp_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Amz-Comp/accuracy_curve_{args.num_rounds}_lr_0_005_Amz-Comp_{args.aggregation_mode}_{args.graph_repair}.html'
 args.window_len = 1200
 
 if True:
@@ -59,4 +59,4 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 trainer = FGLTrainer(args)
 trainer.train()
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Amz-Comp.txt")
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Amz-Comp.txt", args.graph_repair)

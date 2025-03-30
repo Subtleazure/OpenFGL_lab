@@ -20,8 +20,8 @@ args.classes = 6
 args.num_rounds = 1000
 args.lr = 0.01
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_CiteSeer.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_ben.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_ben.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}.html'
 
 if True:
     args.fl_algorithm = "fedavg"
@@ -60,4 +60,4 @@ trainer = FGLTrainer(args)
 trainer.train()
 
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CiteSeer.txt")
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CiteSeer.txt", args.graph_repair)

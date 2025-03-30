@@ -19,8 +19,8 @@ args.classes = 2
 args.num_rounds = 2000
 args.lr = 0.005
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_Tolokers.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Tolokers/accuracy_curve_{args.num_rounds}_lr_0_005_Tolokers_ben.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Tolokers/accuracy_curve_{args.num_rounds}_lr_0_005_Tolokers_ben.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/Tolokers/accuracy_curve_{args.num_rounds}_lr_0_005_Tolokers_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/Tolokers/accuracy_curve_{args.num_rounds}_lr_0_005_Tolokers_{args.aggregation_mode}_{args.graph_repair}.html'
 
 if True:
     args.fl_algorithm = "fedavg"
@@ -58,4 +58,4 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 trainer = FGLTrainer(args)
 trainer.train()
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Tolokers.txt")
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_Tolokers.txt", args.graph_repair)

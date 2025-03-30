@@ -37,3 +37,22 @@ Index 48: 44.00
 Index 47: 40.00
 Average of average positions: 29.47
 
+v1 repair: True
+contaminated_client_indices: [38, 49, 42, 2, 7, 45, 31, 25, 47, 26, 11, 46, 3, 16, 36]
+Index 38: 16.81
+Index 49: 23.11
+Index 42: 24.48
+Index 2: 36.70
+Index 7: 26.74
+Index 45: 12.12
+Index 31: 18.88
+Index 25: 27.54
+Index 47: 25.33
+Index 26: 40.15
+Index 11: 31.80
+Index 46: 5.45
+Index 3: 20.84
+Index 16: 16.65
+Index 36: 29.51
+Average of average positions: 23.74
+

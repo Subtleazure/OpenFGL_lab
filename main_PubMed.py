@@ -20,8 +20,8 @@ args.classes = 3
 args.num_rounds = 1000
 args.lr = 0.01
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_PubMed.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/PubMed/accuracy_curve_{args.num_rounds}_lr_0_01_PubMed_ben.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/PubMed/accuracy_curve_{args.num_rounds}_lr_0_01_PubMed_ben.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/PubMed/accuracy_curve_{args.num_rounds}_lr_0_01_PubMed_{args.aggregation_mode}_{args.graph_repair}.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/PubMed/accuracy_curve_{args.num_rounds}_lr_0_01_PubMed_{args.aggregation_mode}_{args.graph_repair}.html'
 args.window_len = 500
 
 if True:
@@ -60,4 +60,4 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 trainer = FGLTrainer(args)
 trainer.train()
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_PubMed.txt")
+average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_PubMed.txt", args.graph_repair)
