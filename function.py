@@ -422,14 +422,18 @@ def A_D(data, device):
 
 def compute_S_ano(data, device):
     A, D = A_D(data, device)
+    L = D - A  # 拉普拉斯矩阵 L = D - A
     
-    # 只提取对角线元素
-    D_diag = torch.diag(D)
-    A_diag = torch.diag(A)
+    # 计算 D^T L D 和 D^T D
+    D_T_L_D = torch.matmul(D.T, torch.matmul(L, D))
+    D_T_D = torch.matmul(D.T, D)
     
-    # 直接计算对角线差值
-    L_diag = D_diag - A_diag
-    return L_diag.mean().item()
+    # 标量除法：全局求和后计算比值
+    numerator = torch.sum(D_T_L_D)   # 分子：D^T L D 的所有元素求和
+    denominator = torch.sum(D_T_D)   # 分母：D^T D 的所有元素求和
+    s = numerator / denominator     # 标量比值
+    
+    return s.item()  # 返回标量值
 
 
 def S_client_weights_s(S_ano_list):
