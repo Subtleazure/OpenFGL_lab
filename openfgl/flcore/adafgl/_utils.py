@@ -36,7 +36,7 @@ def csr_sparse_dense_matmul(adj, feature):
     file_path = osp.abspath(__file__)
     dir_path = osp.split(file_path)[0]
 
-    ctl_lib = ctl.load_library("/home/ai2/work/OPENFGL/flcore/adafgl/csrc/libmatmul.so", dir_path)
+    ctl_lib = ctl.load_library("/data2/liujiaqi/OpenFGL-main/openfgl/flcore/adafgl/csrc/libmatmul.so", dir_path)
 
     arr_1d_int = ctl.ndpointer(
         dtype=np.int32,

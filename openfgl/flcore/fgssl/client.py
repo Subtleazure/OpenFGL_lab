@@ -92,13 +92,13 @@ class FGSSLClient(BaseClient):
 
                 adj_orig = to_dense_adj(batch.edge_index, max_num_nodes=batch.x.shape[0]).squeeze(0).to(self.device)
 
-                struct_kd = com_distillation_loss(pred_aug_global, pred_aug_local, adj_orig, adj_orig, 3)
-                simi_kd_loss = simi_kd(pred_aug_global, pred_aug_local, batch.edge_index, 4)
+                # struct_kd = com_distillation_loss(pred_aug_global, pred_aug_local, adj_orig, adj_orig, 3)
+                # simi_kd_loss = simi_kd(pred_aug_global, pred_aug_local, batch.edge_index, 4)
 
                 # rkd_Loss = rkd_loss(pred_aug_local , pred_aug_global)
                 # "tag"
-                cc_loss = self.ccKD(pred_aug_local, pred_aug_global)
-                loss3 = simi_kd_2(adj_orig, pred_aug_local, pred_aug_global)
+                # cc_loss = self.ccKD(pred_aug_local, pred_aug_global)
+                # loss3 = simi_kd_2(adj_orig, pred_aug_local, pred_aug_global)
                 loss_ff = edge_distribution_high(batch.edge_index, pred_aug_local, pred_aug_global)
                 globalOne = globalOne[mask]
                 now = now[mask]

@@ -67,14 +67,26 @@ class FGLTrainer:
             self.server.send_message()
 
             # Clients execute their local training
+            if self.args.rhfl == True and (round_id + 1) % 10 == 0:
+                if not self.args.current_mean_loss_list:
+                    self.args.last_mean_loss_list = [0 for i in range(self.args.num_clients)]
+                else: 
+                    self.args.last_mean_loss_list = self.args.current_mean_loss_list
+                self.args.current_mean_loss_list = []
+            
             for client_id in sampled_clients:
-                self.clients[client_id].execute(round_id)
+                if self.args.fl_algorithm == "fedavg":
+                    self.clients[client_id].execute(round_id)
+                else:
+                    self.clients[client_id].execute()
                 self.clients[client_id].send_message()
 
             # Perform aggregation every 10 rounds
             if (round_id + 1) % 10 == 0:
-                if self.args.aggregation_mode == "ben":
+                if self.args.aggregation_mode == "ben" and self.args.rhfl == False:
                     self.server.execute()  # Aggregate client updates
+                elif self.args.aggregation_mode == "ben" and self.args.rhfl == True:
+                    self.server.execute_rhfl()
                 elif self.args.aggregation_mode == "v1":
                     self.server.execute_one_vg()
                 elif self.args.aggregation_mode == "v2":

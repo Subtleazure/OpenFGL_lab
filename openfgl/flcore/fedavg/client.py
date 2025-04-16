@@ -44,9 +44,13 @@ class FedAvgClient(BaseClient):
             for (local_param, global_param) in zip(self.task.model.parameters(), self.message_pool["server"]["weight"]):
                 local_param.data.copy_(global_param)
         
-        # self.task.model.eval()
-        # and self.client_id in self.args.contam_clients
-        # and (round_id + 1) % 10 == 0
+        # if self.args.rhfl == True and (round_id + 1) % 10 == 0:
+        #     if not self.args.current_mean_loss_list:
+        #         self.args.last_mean_loss_list = [0 for i in range(self.args.num_clients)]
+        #     else: 
+        #         self.args.last_mean_loss_list = self.args.current_mean_loss_list
+        #     # self.args.current_mean_loss_list = []
+        
         if self.args.aggregation_mode == "lap" and (round_id + 1) % 10 == 0:
             if self.client_id == 0:
                 self.args.S_ano_list = []
@@ -87,7 +91,7 @@ class FedAvgClient(BaseClient):
         #     self.task.data.edge_index[0][0] = 249  # 修改源节点
         #     self.task.data.edge_index[1][0] = 27  # 修改目标节点
         # print("round id:", round_id)
-        self.task.train()
+        self.task.train(round_id)
 
     def send_message(self):
         """

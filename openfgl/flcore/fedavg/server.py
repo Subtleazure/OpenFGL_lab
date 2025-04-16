@@ -2,7 +2,8 @@ import torch
 from openfgl.flcore.base import BaseServer
 from function import *
 from openfgl.model.gcn import *
-
+import numpy as np
+import matplotlib.pyplot as plt
 
 class FedAvgServer(BaseServer):
     """
@@ -243,6 +244,73 @@ class FedAvgServer(BaseServer):
         of samples each client used for training.
         """
         weights = S_client_weights_s(self.args.S_ano_list)
+
+        if self.args.heatmap:
+            S_ano_list = self.args.S_ano_list  # 原始数据列表
+            N = len(S_ano_list)
+            contaminated_indices = self.args.contaminated_client_indices  # 污染客户端编号（0~N-1）
+
+            # 计算差值矩阵
+            S_ano_array = np.array(S_ano_list)
+            heatmap_data = np.abs(S_ano_array[:, None] - S_ano_array[None, :])
+
+            # --- 指数变换（突出高值差异）---
+            # 方法1：平方变换（gamma=2）
+            heatmap_data_transformed = np.power(heatmap_data, 2)
+
+            # 方法2：自然指数变换（更激进）
+            # heatmap_data_transformed = np.exp(heatmap_data) - 1  # 减1避免0值变为1
+
+            # 分离污染和非污染客户端索引
+            clean_indices = [i for i in range(N) if i not in contaminated_indices]
+            new_order = contaminated_indices + clean_indices  # 污染客户端在前，非污染在后
+
+            # 重排矩阵行列
+            heatmap_data_reordered = heatmap_data_transformed[new_order, :][:, new_order]
+
+            # 设置颜色范围（基于变换后的数据）
+            vmin, vmax = 0, np.max(heatmap_data_reordered)
+
+            # 绘制热图
+            plt.figure(figsize=(10, 8))
+            heatmap = plt.imshow(
+                heatmap_data_reordered,
+                cmap='viridis_r',  # 反转颜色，高值更暗
+                vmin=vmin,
+                vmax=vmax,
+                interpolation='nearest'
+            )
+
+            # 添加颜色条（标注原始差值范围）
+            cbar = plt.colorbar(heatmap, label='Transformed Absolute Difference')
+            # 在颜色条上标注原始值（可选）
+            original_ticks = np.linspace(0, np.max(heatmap_data), 5)  # 原始差值刻度
+            transformed_ticks = np.power(original_ticks, 2)          # 对应的变换后刻度
+            cbar.set_ticks(transformed_ticks)
+            cbar.set_ticklabels([f'{x:.1f}' for x in original_ticks])  # 显示原始值
+
+            # 设置坐标轴刻度（标注分组信息）
+            tick_positions = np.arange(N)
+            tick_labels = [f'C{i+1}' if i in contaminated_indices else f'N{i+1}' 
+                        for i in new_order]  # C:污染, N:非污染
+
+            plt.xticks(tick_positions, tick_labels, rotation=90, fontsize=8)
+            plt.yticks(tick_positions, tick_labels, fontsize=8)
+
+            # 添加分组分隔线（红色虚线）
+            num_contaminated = len(contaminated_indices)
+            plt.axvline(x=num_contaminated - 0.5, color='red', linestyle='--', linewidth=1)
+            plt.axhline(y=num_contaminated - 0.5, color='red', linestyle='--', linewidth=1)
+
+            # 添加标题
+            plt.title('Heatmap with Exponential Transformation\n(C: Contaminated, N: Clean)', fontsize=12)
+            plt.xlabel('Client Index', fontsize=10)
+            plt.ylabel('Client Index', fontsize=10)
+
+            # 保存图片（dpi 设置分辨率，bbox_inches='tight' 去除白边）
+            plt.savefig('/data2/liujiaqi/heatmap/heatmap.png', dpi=300, bbox_inches='tight')
+            plt.close()  # 关闭图像，避免内存泄漏
+        
         with torch.no_grad():
             for it, client_id in enumerate(self.message_pool["sampled_clients"]):                
                 for (local_param, global_param) in zip(self.message_pool[f"client_{client_id}"]["weight"], self.task.model.parameters()):
@@ -272,6 +340,48 @@ class FedAvgServer(BaseServer):
                 else:
                     # 如果不是第一个客户端，将当前客户端的参数乘以权重并累加到全局模型参数中
                     global_param.data += weight * local_param
+
+
+    # rhfl
+    def execute_rhfl(self):
+        """
+        Executes the server-side operations. This method aggregates model updates from the 
+        clients by computing a weighted average of the model parameters, based on the number 
+        of samples each client used for training.
+        """
+        weights = []
+        quality_list = []
+        amount_with_quality = [1 / (self.args.num_clients - 1) for i in range(self.args.num_clients)]
+        amount_with_quality_exp = []
+        beta = 0.5
+        with torch.no_grad():
+            for it, client_id in enumerate(self.message_pool["sampled_clients"]):
+                delta_loss = self.args.last_mean_loss_list[client_id] - self.args.current_mean_loss_list[client_id]
+                quality_list.append(delta_loss / self.args.current_mean_loss_list[client_id])
+            quality_sum = sum(quality_list)
+
+            for it, client_id in enumerate(self.message_pool["sampled_clients"]):
+                amount_with_quality[client_id] += beta * quality_list[client_id] / quality_sum
+                amount_with_quality_exp.append(np.exp(amount_with_quality[client_id]))
+            amount_with_quality_sum = sum(amount_with_quality_exp)
+
+            for it, client_id in enumerate(self.message_pool["sampled_clients"]):
+                weights.append(amount_with_quality_exp[client_id] / amount_with_quality_sum)
+                for (local_param, global_param) in zip(self.message_pool[f"client_{client_id}"]["weight"], self.task.model.parameters()):
+                    if it == 0:
+                        global_param.data.copy_(weights[client_id] * local_param)
+                    else:
+                        global_param.data += weights[client_id] * local_param
+            
+        print("weights:", weights)
+        sorted_indices1 = sort_indices(weights)
+        if self.args.graph_repair:
+            contam_num = int(self.args.num_clients * self.args.contamination_ratio)
+            self.args.repair_clients = sorted_indices1[:contam_num]
+        print("weights list(greater):", sorted_indices1)
+        with open(self.args.log_dir, 'a', encoding='utf-8') as file:
+            file.write(f"weights list(greater): {sorted_indices1}\n")
+
 
     def send_message(self):
         """

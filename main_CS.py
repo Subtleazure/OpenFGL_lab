@@ -9,7 +9,10 @@ from function import *
 from average_index import *
 
 args = config.args
-
+# args.aggregation_mode = "lap"
+# args.graph_repair = True
+args.fl_algorithm = "fedavg"
+args.model = ["gcn"]
 # modify the root path
 args.root = "/data2/liujiaqi/openfgl_dataset/contaminated/CS"
 args.dataset = ["CS"]
@@ -17,19 +20,21 @@ args.simulation_mode = "subgraph_fl_louvain"
 args.num_clients = 50
 args.features = 6805
 args.classes = 15
-args.num_rounds = 2000
+args.num_rounds = 1000
 args.lr = 0.01
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_CS.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.aggregation_mode}_{args.graph_repair}.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.aggregation_mode}_{args.graph_repair}.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.aggregation_mode}_{args.graph_repair}_4.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.aggregation_mode}_{args.graph_repair}_4.html'
+# args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.fl_algorithm}_4.png'
+# args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CS/accuracy_curve_{args.num_rounds}_lr_0_01_CS_{args.fl_algorithm}_4.html'
 args.window_len = 1000
-if True:
-    args.fl_algorithm = "fedavg"
-    args.model = ["gcn"]
-else:
-    args.fl_algorithm = "fedproto"
-    # choose multiple gnn models for model heterogeneity setting.
-    args.model = ["gcn", "gat", "sgc", "mlp", "graphsage"]
+# if True:
+#     args.fl_algorithm = "fedavg"
+#     args.model = ["gcn"]
+# else:
+#     args.fl_algorithm = "fedproto"
+#     # choose multiple gnn models for model heterogeneity setting.
+#     args.model = ["gcn", "gat", "sgc", "mlp", "graphsage"]
 
 args.metrics = ["accuracy"]
 
@@ -59,4 +64,4 @@ client_data_list = create_contaminated_client(contamination_ratio=args.contamina
 trainer = FGLTrainer(args)
 trainer.train()
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CS.txt", args.graph_repair)
+# average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CS.txt", args.graph_repair)

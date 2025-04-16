@@ -43,9 +43,9 @@ class AdaFGLServer(BaseServer):
         from clients during the initial phase.
         """
         # switch phase
-        if self.message_pool["round"] == config["num_rounds_vanilla"]:
-            self.phase = 1
-        
+        # if self.message_pool["round"] == config["num_rounds_vanilla"] +1:
+        #     self.phase = 1
+        self.message_pool
         
         # execute
         if self.phase == 0:
@@ -67,10 +67,9 @@ class AdaFGLServer(BaseServer):
         Sends a message to the clients containing the aggregated model parameters.
         The content of the message depends on the current phase.
         """
-        if self.phase == 0:
-            self.message_pool["server"] = {
-                "weight": list(self.task.model.parameters())
-            }
-        else:
-            self.message_pool["server"] = {}
+
+        self.message_pool["server"] = {
+            "weight": list(self.task.model.parameters())
+        }
+
         

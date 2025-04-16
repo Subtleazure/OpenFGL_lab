@@ -9,7 +9,8 @@ from function import *
 from average_index import *
 
 args = config.args
-
+args.fl_algorithm = "fedavg"
+args.model = ["gcn"]
 # modify the root path
 args.root = "/data2/liujiaqi/openfgl_dataset/contaminated/CiteSeer"
 args.dataset = ["CiteSeer"]
@@ -20,16 +21,18 @@ args.classes = 6
 args.num_rounds = 1000
 args.lr = 0.01
 args.log_dir = '/data2/liujiaqi/OpenFGL-main/log_CiteSeer.txt'
-args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}.png'
-args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}.html'
+# args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}_1.png'
+# args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.aggregation_mode}_{args.graph_repair}_1.html'
+# args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.fl_algorithm}_5.png'
+# args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_{args.fl_algorithm}_5.html'
+args.accuracy_curve_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_rhfl_1.png'
+args.accuracy_curve_html_dir = f'/data2/liujiaqi/curves/CiteSeer/accuracy_curve_{args.num_rounds}_lr_0_01_CiteSeer_rhfl_1.html'
+# if True:
 
-if True:
-    args.fl_algorithm = "fedavg"
-    args.model = ["gcn"]
-else:
-    args.fl_algorithm = "fedproto"
-    # choose multiple gnn models for model heterogeneity setting.
-    args.model = ["gcn", "gat", "sgc", "mlp", "graphsage"]
+# else:
+#     args.fl_algorithm = "fedproto"
+#     # choose multiple gnn models for model heterogeneity setting.
+#     args.model = ["gcn", "gat", "sgc", "mlp", "graphsage"]
 
 args.metrics = ["accuracy"]
 
@@ -60,4 +63,4 @@ trainer = FGLTrainer(args)
 trainer.train()
 
 
-average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CiteSeer.txt", args.graph_repair)
+# average_index_main(args.aggregation_mode, args.log_dir, "/data2/liujiaqi/OpenFGL-main/weight_CiteSeer.txt", args.graph_repair)

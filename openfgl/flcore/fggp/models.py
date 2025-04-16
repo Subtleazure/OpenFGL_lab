@@ -18,6 +18,7 @@ class GraphConvolution(nn.Module):
 
     def forward(self, input, adj):
         support = torch.mm(input, self.weight)
+        print(adj.shape, support.shape)
         output = torch.spmm(adj, support)
         return output + self.bias
 
@@ -37,11 +38,15 @@ class FedGCN(nn.Module):
 
 
     def forward(self, data):
+        print("Original data.x shape:", data.x.shape)  # [n_nodes, nfeat]
+        print("Original data.adj shape:", data.adj.shape)  # [n_nodes, n_nodes]
+        assert data.x.shape[0] == data.adj.shape[0], "Node numbers do not match!"
         x, adj = data.x, data.adj
         for i, layer in enumerate(self.layers[:-1]):
             x = layer(x, adj)
             x = F.relu(x)
             x = F.dropout(x, p=self.dropout, training=self.training)
+            print("After dropout shape:", x.shape)  # 应该仍然是 [n_nodes, nhid]
 
         logits = self.layers[-1](x, adj)
 
@@ -59,6 +64,7 @@ class FedGCN(nn.Module):
 
         # 应用Gumbel-Softmax采样
         adj_sampled = self.gumbel_softmax(logits, tau=0.5)
+        print("adj_sampled: ",adj_sampled.shape)
         return adj_sampled, logits
 
     def gumbel_softmax(self, logits, tau):

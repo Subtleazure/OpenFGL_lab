@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.utils import degree, to_scipy_sparse_matrix
 from scipy import sparse as sp
-
+import copy
 def init_structure_encoding(n_rw, n_dg, gs, type_init):
     tmp = []
     if type_init == 'rw':
@@ -37,10 +37,13 @@ def init_structure_encoding(n_rw, n_dg, gs, type_init):
             gg['stc_enc'] = SE_dg.to(gg.x.device)
 
     elif type_init == 'rw_dg':
-        for gg in gs:
             # SE_rw
-            g = gg.clone().detach().cpu()
-            A = to_scipy_sparse_matrix(g.edge_index, num_nodes=g.num_nodes)
+        for g in gs:
+            # if isinstance(gg, tuple):
+            #     g = tuple(copy.deepcopy(item) for item in gg)
+            # else:
+            #     g = copy.deepcopy(gg)
+            A = to_scipy_sparse_matrix(g.edge_index, num_nodes=gs.num_nodes)
             D = (degree(g.edge_index[0], num_nodes=g.num_nodes) ** -1.0).numpy()
 
             Dinv=sp.diags(D)
@@ -60,7 +63,9 @@ def init_structure_encoding(n_rw, n_dg, gs, type_init):
             for i in range(len(g_dg)):
                 SE_dg[i,int(g_dg[i]-1)] = 1
 
-            gg['stc_enc'] = torch.cat([SE_rw, SE_dg], dim=1).to(gg.x.device)
+            gg['stc_enc'] = torch.cat([SE_rw, SE_dg], dim=1)
+            
+            
             tmp.append(gg)
 
 

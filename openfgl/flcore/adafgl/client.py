@@ -84,14 +84,14 @@ class AdaFGLClient(BaseClient):
         """
         Sends a message to the server containing the model parameters and the number of samples 
         in the current client's dataset. The content of the message depends on the current phase.
-        """
-        if self.phase == 0:
-            self.message_pool[f"client_{self.client_id}"] = {
-                "num_samples": self.task.num_samples,
-                "weight": list(self.task.model.parameters())
-            }
-        else:
-            self.message_pool[f"client_{self.client_id}"] = {}
+        # """
+        # if self.phase == 0:
+        self.message_pool[f"client_{self.client_id}"] = {
+            "num_samples": self.task.num_samples,
+            "weight": list(self.task.model.parameters())
+        }
+        # else:
+        #     self.message_pool[f"client_{self.client_id}"] = {}
         
     def adafgl_postprocess(self, loss_ce_fn=nn.CrossEntropyLoss()):
         """

@@ -45,7 +45,7 @@ class NodeClsTask(BaseTask):
         
 
         
-    def train(self, splitted_data=None):
+    def train(self, round_id, splitted_data=None):
         """
         Train the model on the provided or processed data.
 
@@ -60,23 +60,38 @@ class NodeClsTask(BaseTask):
                 assert name in splitted_data
         
         self.model.train()
+        criterion = nn.CrossEntropyLoss()
+        participant_loss_list = []
+
         for _ in range(self.args.num_epochs):
             self.optim.zero_grad()
             embedding, logits = self.model.forward(splitted_data["data"])
-            loss_train = self.loss_fn(embedding, logits, splitted_data["data"].y, splitted_data["train_mask"])
-            if self.args.dp_mech != "no_dp":
-                # clip the gradient of each sample in this batch
-                clip_gradients(self.model, loss_train, loss_train.shape[0], self.args.dp_mech, self.args.grad_clip)
+
+            if self.args.fl_algorithm == "fedavg" and self.args.rhfl == True:
+                private_loss = criterion(logits, splitted_data["data"].y)
+                private_loss.backward()
+                self.optim.step()
+                if (round_id + 1) % 10 == 0:
+                    participant_loss_list.append(private_loss.item()) 
             else:
-                loss_train.backward()
-            
-            if self.step_preprocess is not None:
-                self.step_preprocess()
-            
-            self.optim.step()
-            if self.args.dp_mech != "no_dp":
-                # add noise to parameters
-                add_noise(self.args, self.model, loss_train.shape[0])
+                loss_train = self.loss_fn(embedding, logits, splitted_data["data"].y, splitted_data["train_mask"])
+                if self.args.dp_mech != "no_dp":
+                    # clip the gradient of each sample in this batch
+                    clip_gradients(self.model, loss_train, loss_train.shape[0], self.args.dp_mech, self.args.grad_clip)
+                else:
+                    loss_train.backward()
+                
+                if self.step_preprocess is not None:
+                    self.step_preprocess()
+                
+                self.optim.step()
+                if self.args.dp_mech != "no_dp":
+                    # add noise to parameters
+                    add_noise(self.args, self.model, loss_train.shape[0])
+                
+        if (round_id + 1) % 10 == 0 and self.args.fl_algorithm == "fedavg" and self.args.rhfl == True:
+            mean_participant_loss = np.mean(participant_loss_list)
+            self.args.current_mean_loss_list.append(mean_participant_loss)
 
     
     def evaluate(self, splitted_data=None, mute=False):
@@ -239,7 +254,7 @@ class NodeClsTask(BaseTask):
             return 0.6, 0.2, 0.2
         elif name in ["ogbn-products"]:
             return 0.1, 0.05, 0.85
-        elif name in ["Roman-empire", "Amazon-ratings", "Tolokers", "Actor", "Questions", "Minesweeper"]:
+        elif name in ["Roman-empire", "Tolokers", "Actor", "Questions", "Minesweeper","Amazon-ratings","Flickr"]:
             return 0.5, 0.25, 0.25
         
         

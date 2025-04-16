@@ -57,14 +57,18 @@ def create_contaminated_client(contamination_ratio, args, processed_dir, client_
     num_contaminated_clients = int(num_clients * contamination_ratio)
     print(num_contaminated_clients)
     # 随机选择需要污染的客户端索引
-    contaminated_client_indices = random.sample(
+    args.contaminated_client_indices = random.sample(
         range(num_clients), num_contaminated_clients)
-    print("contaminated_client_indices: ", contaminated_client_indices)
+    # args.contaminated_client_indices= [6,13,17]
+    # temp = random.sample(
+    # range(num_clients), num_contaminated_clients-3)
+    # args.contaminated_client_indices.extend(temp)
+    print("contaminated_client_indices: ", args.contaminated_client_indices)
     with open(args.log_dir, 'a', encoding='utf-8') as file:
         file.write(
-            f"contaminated_client_indices:{contaminated_client_indices}\n")
+            f"contaminated_client_indices:{args.contaminated_client_indices}\n")
     # 处理每个需要污染的客户端
-    for client_id in contaminated_client_indices:
+    for client_id in args.contaminated_client_indices:
         splitted_data = client_data_list[client_id]
         # 调用 random_topology_noise 函数引入边噪声
         processed_data = random_topology_noise(
